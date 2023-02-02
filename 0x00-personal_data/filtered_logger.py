@@ -13,7 +13,6 @@ from mysql.connector import connection
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
-
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
     """
@@ -55,9 +54,12 @@ def get_logger() -> logging.Logger:
     logger.propagate = False
 
     target_handler = logging.StreamHandler()
-    target_handler.setFormatter(RedactingFormatter(PII_FIELDS))
-    logger.addHandler(target_handler)
+    target_handler.setLevel(logging.INFO)
 
+    formatter = RedactingFormatter(list(PII_FIELDS))
+    target_handle.setFormatter(formatter)
+
+    logger.addHandler(target_handler)
     return logger
 
 
