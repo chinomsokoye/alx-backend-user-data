@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """ Use of regex in replacing occurrences of certain field values """
+'''
 import re
 from typing import List
 import logging
@@ -37,7 +38,7 @@ def get_db() -> mysql.connector.connection.MYSQLConnection:
         database=os.getenv('PERSONAL_DATA_DB_NAME')
     )
     return db_connect
-
+'''
 
 def filter_datum(fields: List[str], redaction: str, message: str,
                  separator: str) -> str:
@@ -47,7 +48,7 @@ def filter_datum(fields: List[str], redaction: str, message: str,
                          + separator, message)
     return message
 
-
+'''
 def get_logger() -> logging.Logger:
     """ Returns a logging.Logger object """
     logger = logging.getLogger('user_data')
@@ -91,3 +92,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+'''
