@@ -9,9 +9,9 @@ import logging
 from typing import List
 from os import environ
 from mysql.connector import connection
-
-PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 '''
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
 
 
 class RedactingFormatter(logging.Formatter):
@@ -45,6 +45,7 @@ def get_db() -> connection.MYSQLConnection:
         host=db_host,
         database=db_name)
     return connector
+'''
 
 
 def get_logger() -> logging.Logger:
@@ -58,7 +59,6 @@ def get_logger() -> logging.Logger:
     logger.addHandler(target_handler)
 
     return logger
-'''
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,
