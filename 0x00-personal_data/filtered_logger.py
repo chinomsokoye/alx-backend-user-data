@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """ Use of regex in replacing occurrences of certain field values """
 import re
-import logging
 from typing import List
-from os import environ
-from mysql.connector import connection
+import logging
+import mysql.connector
+import os
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
@@ -29,16 +29,13 @@ class RedactingFormatter(logging.Formatter):
 
 def get_db() -> connection.MYSQLConnection:
     """ Connection to MySQL environment """
-    username = environ.get("PERSONAL_DATA_DB_USERNAME", "root")
-    password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
-    db_host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
-    db_name = environ.get("PERSONAL_DATA_DB_NAME")
-    connector = connection.MySQLConnection(
-        user=username,
-        password=password,
-        host=db_host,
-        database=db_name)
-    return connector
+    db_connect = mysql.connector.connect(
+        user=os.getenv("PERSONAL_DATA_DB_USERNAME", "root"),
+        password=os..getenv("PERSONAL_DATA_DB_PASSWORD", ""),
+        host=os.getenv("PERSONAL_DATA_DB_HOST", "localhost"),
+        database=os.getenv("PERSONAL_DATA_DB_NAME")
+    )
+    return db_connect
 
 
 def get_logger() -> logging.Logger:
