@@ -3,13 +3,9 @@
 import re
 import logging
 from typing import List
-'''
-import re
-import logging
-from typing import List
 from os import environ
 from mysql.connector import connection
-'''
+
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
@@ -31,7 +27,6 @@ class RedactingFormatter(logging.Formatter):
                             super().format(record), self.SEPARATOR)
 
 
-'''
 def get_db() -> connection.MYSQLConnection:
     """ Connection to MySQL environment """
     username = environ.get("PERSONAL_DATA_DB_USERNAME", "root")
@@ -44,7 +39,6 @@ def get_db() -> connection.MYSQLConnection:
         host=db_host,
         database=db_name)
     return connector
-'''
 
 
 def get_logger() -> logging.Logger:
