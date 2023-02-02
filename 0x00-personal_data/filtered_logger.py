@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """ Use of regex in replacing occurrences of certain field values """
+import mysql.connector
+import os
+'''
 import re
 from typing import List
 import logging
-import mysql.connector
-import os
 
 
 class RedactingFormatter(logging.Formatter):
@@ -25,6 +26,7 @@ class RedactingFormatter(logging.Formatter):
                             super().format(record), self.SEPARATOR)
 
 PII_FIELDS = ("name", "email", "password", "ssn", "phone")
+'''
 
 
 def get_db() -> connection.MYSQLConnection:
@@ -38,6 +40,7 @@ def get_db() -> connection.MYSQLConnection:
     return db_connect
 
 
+'''
 def get_logger() -> logging.Logger:
     """ Returns a logging.Logger object """
     logger = logging.getLogger("user_data")
@@ -63,7 +66,6 @@ def filter_datum(fields: List[str], redaction: str, message: str,
     return message
 
 
-'''
 def main() -> None:
     """ Obtain database connection using get_db
     retrieve all role in the users table and display
