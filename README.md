@@ -3,7 +3,7 @@ Curriculum <br>
 
 # 0x00. Personal data
 
-`Backend` `Authentication`
+`Back-end` `Authentification`
 
 #### Concepts
 
