@@ -39,6 +39,15 @@ def get_db() -> mysql.connector.connection.MYSQLConnection:
     return db_connect
 
 
+def filter_datum(fields: List[str], redaction: str, message: str,
+                 separator: str) -> str:
+    """ Returns regex obfuscated log messages """
+    for field in fields:
+        message = re.sub(f'{field}=(.*?){separator}',
+                         f'{field}={redaction}{separator}', message)
+    return message
+
+
 def get_logger() -> logging.Logger:
     """ Returns a logging.Logger object """
     logger = logging.getLogger("user_data")
@@ -53,15 +62,6 @@ def get_logger() -> logging.Logger:
 
     logger.addHandler(target_handler)
     return logger
-
-
-def filter_datum(fields: List[str], redaction: str, message: str,
-                 separator: str) -> str:
-    """ Returns regex obfuscated log messages """
-    for field in fields:
-        message = re.sub(f'{field}=(.*?){separator}',
-                         f'{field}={redaction}{separator}', message)
-    return message
 
 
 '''
