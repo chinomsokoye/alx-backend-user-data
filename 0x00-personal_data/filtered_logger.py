@@ -3,6 +3,10 @@
 import re
 import logging
 from typing import List
+'''
+import re
+import logging
+from typing import List
 from os import environ
 from mysql.connector import connection
 
@@ -52,6 +56,7 @@ def get_logger() -> logging.Logger:
     logger.addHandler(target_handler)
 
     return logger
+'''
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,
@@ -63,6 +68,7 @@ def filter_datum(fields: List[str], redaction: str, message: str,
     return message
 
 
+'''
 def main() -> None:
     """ Obtain database connection using get_db
     retrieve all role in the users table and display
@@ -87,3 +93,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+'''
