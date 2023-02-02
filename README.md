@@ -20,7 +20,7 @@ _For this project, look at these concepts:_
 * [bcrypt package](https://www.github.com/pyca/bcrypt/)
 * [Logging to Files, Setting Levels, and Formatting](https://www.youtube.com/watch?v=-ARI4Cz-awo)
 
-## General Requirement
+## General Requirement & Setup
 
 * All files intrepreted/compiled on Ubuntu 18.04 LTS using `python3` (version 3.7)
 * All files should end with a new line
