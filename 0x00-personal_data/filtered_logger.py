@@ -64,7 +64,6 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-'''
 def main() -> None:
     """ Obtain database connection using get_db
     retrieve all role in the users table and display
@@ -89,4 +88,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-'''
