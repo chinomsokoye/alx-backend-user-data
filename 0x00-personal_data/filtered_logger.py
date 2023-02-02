@@ -6,8 +6,6 @@ import logging
 import mysql.connector
 import os
 
-PII_FIELDS = ("name", "email", "phone", "ssn", "password")
-
 
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
@@ -25,6 +23,8 @@ class RedactingFormatter(logging.Formatter):
         """ Returns filtered values from log records """
         return filter_datum(self.fields, self.REDACTION,
                             super().format(record), self.SEPARATOR)
+
+PII_FIELDS = ("name", "email", "password", "ssn", "phone")
 
 
 def get_db() -> connection.MYSQLConnection:
