@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """ Use of regex in replacing occurrences of certain field values """
-'''
 import re
-from typing import List
 import logging
-import mysql.connector
-import os
+from typing import List
+from os import environ
+from mysql.connector import connection
+
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
 class RedactingFormatter(logging.Formatter):
@@ -17,52 +18,49 @@ class RedactingFormatter(logging.Formatter):
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
-        self.fields = fields
         super(RedactingFormatter, self).__init__(self.FORMAT)
+        self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
         """ Returns filtered values from log records """
-        result = logging.Formatter(self.FORMAT).format(record)
-        return filter_datum(self.fields, self.REDACTION, result, self.SEPARATOR)
+        return filter_datum(self.fields, self.REDACTION,
+                            super().format(record), self.SEPARATOR)
 
 
-PII_FIELDS = ("name", "email", "password", "ssn", "phone")
-
-
-def get_db() -> mysql.connector.connection.MYSQLConnection:
+def get_db() -> connection.MYSQLConnection:
     """ Connection to MySQL environment """
-    db_connect = mysql.connector.connect(
-        user=os.getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
-        password=os.getenv('PERSONAL_DATA_DB_PASSWORD', ''),
-        host=os.getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
-        database=os.getenv('PERSONAL_DATA_DB_NAME')
-    )
-    return db_connect
-'''
+    username = environ.get("PERSONAL_DATA_DB_USERNAME", "root")
+    password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
+    db_host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = environ.get("PERSONAL_DATA_DB_NAME")
+    connector = connection.MySQLConnection(
+        user=username,
+        password=password,
+        host=db_host,
+        database=db_name)
+    return connector
+
+
+def get_logger() -> logging.Logger:
+    """ Returns a logging.Logger object """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    target_handler = logging.StreamHandler()
+    target_handler.setFormatter(RedactingFormatter(PII_FIELDS))
+    logger.addHandler(target_handler)
+
+    return logger
+
 
 def filter_datum(fields: List[str], redaction: str, message: str,
                  separator: str) -> str:
     """ Returns regex obfuscated log messages """
     for field in fields:
-        message = re.sub(field + '=.*?' + separator, field + '=' + redaction
-                         + separator, message)
+        message = re.sub(f'{field}=(.*?){separator}',
+                         f'{field}={redaction}{separator}', message)
     return message
-
-'''
-def get_logger() -> logging.Logger:
-    """ Returns a logging.Logger object """
-    logger = logging.getLogger('user_data')
-    logger.setLevel(logging.INFO)
-    logger.propagate = False
-
-    target_handler = logging.StreamHandler()
-    target_handler.setLevel(logging.INFO)
-
-    formatter = RedactionFormatter(list(PII_FIELDS))
-    target_handler.setFormatter(formatter)
-
-    logger.addHandler(target_handler)
-    return logger
 
 
 def main() -> None:
@@ -71,25 +69,21 @@ def main() -> None:
     each row under a filtered format
     """
     db = get_db()
-    cur = db.cursor()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
 
-    query = ('SELECT * FROM users;')
-    cur.execute(query)
-    fetch_data = cur.fetchall()
-
+    headers = [field[0] for field in cursor.description]
     logger = get_logger()
 
-    for row in fetch_data:
-        fields = 'name={}; email={}; phone={}; ssn={}; password={}; ip={}; '\
-                        'last_login={}; user_agent={};'
-        fields = fields.format(row[0], row[1], row[2], row[3], row[4],
-                               row[5], row[6], row[7])
-        logger.info(fields)
+    for row in cursor:
+        info_answer = ''
+        for f, p in zip(row, headers):
+            info_answer += f'{p}={(f)}; '
+        logger.info(info_answer)
 
-    cur.close()
+    cursor.close()
     db.close()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
-'''
