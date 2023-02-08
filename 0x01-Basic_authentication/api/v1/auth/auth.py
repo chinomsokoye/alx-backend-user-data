@@ -3,7 +3,7 @@
 Manage API authentication
 """
 from flask import request
-from typing import TypeVar, List
+from typing import List, TypeVar
 
 
 class Auth():
@@ -12,21 +12,24 @@ class Auth():
     """
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """ require authentication """
-        if path is None:
+        if path is None or excluded_paths is None or not len(excluded_paths):
             return True
-        if excluded_paths is None:
-            return True
-        if len(excluded_paths) == 0:
-            return True
-        if path is None or excluded_paths is None:
-            return True
-        path = path + '/' if path[-1] != '/' else path
+        if path[-1] != '/':
+            path += '/'
+        if excluded_paths[-1] != '/':
+            excluded_paths += '/'
+        asters = [stars[:-1]
+                  for stars in excluded_paths if stars[-1] == '*']
+
+        for starts in asters:
+            if path.startswith(stars):
+                return False
         if path in excluded_paths:
             return False
         return True
 
-    def authentication_header(self, request=None) -> str:
-        """ authhentication header """
+    def authorization_header(self, request=None) -> str:
+        """ authorization header """
         if request is None:
             return None
         if 'Authorization' not in request.headers:
