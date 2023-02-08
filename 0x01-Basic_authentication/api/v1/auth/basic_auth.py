@@ -19,7 +19,7 @@ class BasicAuth(Auth):
             return None
         if auth_header.startswith("Basic "):
             return "".join(auth_header.split(" ")[1:])
-
+'''
     def decode_base64_authorization_header(self, b64_auth_header: str) -> str:
         """ Decode base64 authorization header """
         if b64_auth_header is None or not isinstance(b64_auth_header, str):
@@ -69,3 +69,4 @@ class BasicAuth(Auth):
         user_credentials = self.user_object_from_credentials(
             user_email, user_password)
         return user_credentials
+'''
