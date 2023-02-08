@@ -2,8 +2,9 @@
 """ Module Basic_auth
 """
 import base64
+from base64 import b64decode, decoee
 from api.v1.auth.auth import Auth
-from typing import TypeVar
+from typing import TypeVar, Tuple
 from models.user import User
 
 
@@ -11,9 +12,9 @@ class BasicAuth(Auth):
     """ BasicAuth class
     """
     def extract_base64_authorization_header(
-            self, authorizatin_header: str) -> str:
+            self, authorization_header: str) -> str:
         """ Extract base64 authorization header """
-        if authorizationn_header is None:
+        if authorization_header is None:
             return None
         if type(authorization_header) != str:
             return None
@@ -28,7 +29,7 @@ class BasicAuth(Auth):
             try:
                 x = base64_authorization_header.encode('utf-8')
                 base = base64.b64decode(x)
-                return basse.decode('utf-8')
+                return base.decode('utf-8')
             except Exception:
                 return None
 
