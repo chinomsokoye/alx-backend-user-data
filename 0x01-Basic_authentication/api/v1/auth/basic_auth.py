@@ -1,67 +1,70 @@
 #!/usr/bin/env python3
 """ Module Basic_auth
 """
-import base64
-from base64 import b64decode, decoee
-from api.v1.auth.auth import Auth
 from typing import TypeVar, Tuple
+from base64 import b64decode, decode
+from api.v1.auth.auth import Auth
 from models.user import User
+import base64
 
 
 class BasicAuth(Auth):
     """ BasicAuth class
     """
-    def extract_base64_authorization_header(
-            self, authorization_header: str) -> str:
+    def extract_base64_authorization_header(self, auth_header: str) -> str:
         """ Extract base64 authorization header """
-        if authorization_header is None:
+        if auth_header is None or not isinstance(auth_header, str):
             return None
-        if type(authorization_header) != str:
+        if 'Basic ' not in auth_header:
             return None
-        if authorization_header.startswith('Basic '):
-            return "".join(authorization_header.split(" ")[1:])
+        return auth_header[6:]
 
-    def decode_base64_authorization_header(
-            self, base64_authorization_header: str) -> str:
+    def decode_base64_authorization_header(self, b64_auth_header: str) -> str:
         """ Decode base64 authorization header """
-        if base64_authorization_header and type(
-                base64_authorization_header) == str:
-            try:
-                x = base64_authorization_header.encode('utf-8')
-                base = base64.b64decode(x)
-                return base.decode('utf-8')
-            except Exception:
-                return None
+        if b64_auth_header is None or not isinstance(b64_auth_header, str):
+            return None
+        try:
+            b64 = base64.b64decode(b64_auth_header)
+            b64_decode = b64.decode('utf-8')
+        except Exception:
+            return None
+        return b64_decode
 
     def extract_user_credentials(
-            self, decoded_base64_authorization_header: str) -> (str, str):
+            self, decoded_b64_auth_header: str) -> (str, str):
         """ Return user credentials """
-        c = decoded_base64_authorization_header
-        if c and type(c) == str and ":" in c:
-            mail = c.split(':')[0]
-            password = "".join(c.split(':', 1)[1:])
-            return(mail, password)
-        return(None, None)
+        if decoded_b64_auth_header is None or not isinstance(
+                decoded_b64_auth_header, str)\
+                or ':' not in decoded_b64_auth_header:
+            return (None, None)
+        return decoded_b64_auth_header.split(':', 1)
 
     def user_object_from_credentials(
             self, user_email: str, user_pwd: str) -> TypeVar('User'):
         """ User object from credentials """
-        if type(user_email) != str:
+        if user_email is None or not isinstance(
+                user_email, str) or user_pwd is None or not isinstance(
+                    user_pwd, str):
             return None
-        if type(user_pwd) != str:
-            return None
-        if user_email and user_pwd:
+        try:
             users = User.search({"email": user_email})
-            for user in users:
-                if user and user.is_valid_password(user_pwd):
-                    return user
-        return None
+        except Exception:
+            return None
+        for user in users:
+            if user.is_valid_password(user_pwd):
+                return user
+            return None
 
     def current_user(self, request=None) -> TypeVar('User'):
         """ Basic authentication completion """
-        if request:
-            auth_head = self.authorization_header(request)
-            extract = self.extract_base64_authorization_header(auth_head)
-            decode = self.decode_base64_authorization_header(extract)
-            (email, password) = self.extract_user_credentials(decode)
-            return self.user_object_from_credentials(email, password)
+        auth_header = self.authorization_header(request)
+        if not auth_header:
+            return None
+        extract_base64 = self.extract_base64_authorization_header(auth_header)
+        decode_base64 = self.decode_base64_authorization_header(extract_base64)
+        user_credentials = self.extract_user_credentials(decode_base64)
+        user_email = user_credentials[0]
+        user_password = user_credentials[1]
+        user_credentials = self.user_object_from_credentials(
+            user_email, user_password)
+        return user_credentials
