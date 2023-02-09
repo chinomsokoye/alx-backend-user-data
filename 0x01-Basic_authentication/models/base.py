@@ -40,7 +40,7 @@ class Base():
         """
         if type(self) != type(other):
             return False
-        if not isinstance(self, Base):
+        if not isinstance(Base):
             return False
         return (self.id == other.id)
 
@@ -126,6 +126,7 @@ class Base():
         """ Search all objects with matching attributes
         """
         s_class = cls.__name__
+
         def _search(obj):
             if len(attributes) == 0:
                 return True
@@ -133,5 +134,4 @@ class Base():
                 if (getattr(obj, k) != v):
                     return False
             return True
-        
         return list(filter(_search, DATA[s_class].values()))

@@ -47,7 +47,7 @@ class BasicAuth(Auth):
                     user_pwd, str):
             return None
         try:
-            users = User.search({"email": user_email})
+            users = User.search({'email': user_email})
         except Exception:
             return None
         for user in users:

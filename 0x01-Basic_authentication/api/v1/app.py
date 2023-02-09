@@ -45,7 +45,7 @@ def forbidden_error(error) -> str:
 
 
 @app.before_request
-def before_request():
+def before_request() -> str:
     """ Filter for request
     """
     request_path_list = ['/api/v1/status/',

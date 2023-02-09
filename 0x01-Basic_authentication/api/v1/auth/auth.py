@@ -20,7 +20,7 @@ class Auth():
         if excluded_paths[-1] != '/':
             excluded_paths += '/'
 
-        astericks = [stars[:1]
+        astericks = [stars[:-1]
                      for stars in excluded_paths if stars[-1] == '*']
 
         for stars in astericks:
