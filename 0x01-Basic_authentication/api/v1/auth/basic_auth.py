@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" Module Basic_auth
+""" Module Basic_auth for user authentication
 """
 from typing import TypeVar, Tuple
 from base64 import b64decode, decode
@@ -9,7 +9,7 @@ import base64
 
 
 class BasicAuth(Auth):
-    """ BasicAuth class
+    """ Extends BasicAuth class
     """
     def extract_base64_authorization_header(self, auth_header: str) -> str:
         """ Extract base64 authorization header """
@@ -20,7 +20,7 @@ class BasicAuth(Auth):
         return auth_header[6:]
 
     def decode_base64_authorization_header(self, b64_auth_header: str) -> str:
-        """ Decode base64 authorization header """
+        """ Returns decode base64 authorization """
         if b64_auth_header is None or not isinstance(b64_auth_header, str):
             return None
         try:
@@ -32,7 +32,7 @@ class BasicAuth(Auth):
 
     def extract_user_credentials(
             self, decoded_b64_auth_header: str) -> (str, str):
-        """ Return user credentials """
+        """ Returns user credentials """
         if decoded_b64_auth_header is None or not isinstance(
                 decoded_b64_auth_header, str) \
            or ':' not in decoded_b64_auth_header:
@@ -41,7 +41,7 @@ class BasicAuth(Auth):
 
     def user_object_from_credentials(
             self, user_email: str, user_pwd: str) -> TypeVar('User'):
-        """ User object from credentials """
+        """ Returns user object from credentials """
         if user_email is None or not isinstance(
                 user_email, str) or user_pwd is None or not isinstance(
                     user_pwd, str):
@@ -56,7 +56,7 @@ class BasicAuth(Auth):
             return None
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """ Basic authentication completion """
+        """ Overloads Basic authentication """
         auth_header = self.authorization_header(request)
         if not auth_header:
             return None
