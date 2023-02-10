@@ -3,7 +3,7 @@
 Session database class
 """
 from datetime import datetime, timedelta, timedelta
-from api.v1.auth.seesion_exp_auth import SessionExpAuth
+from api.v1.auth.session_exp_auth import SessionExpAuth
 from models.user_session import UserSession
 
 
