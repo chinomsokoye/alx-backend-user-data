@@ -21,9 +21,9 @@ class SessionExpAuth(SessionAuth):
     def create_session(self, user_id=None):
         """ Session ID generator """
         session_id = super().create_session(user_id)
-        if user_id is None:
+        if session_id is None:
             return None
-        session_dictionary = {'user_id': user_id, 'created_id': datetime.now()}
+        session_dictionary = {'user_id': user_id, 'created_at': datetime.now()}
         SessionAuth.user_id_by_session_id[session_id] = session_dictionary
         return session_id
 
