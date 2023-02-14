@@ -5,10 +5,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from user import Base, User
-from typing import TypeVar
-from sqlalchmey.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchmey.exc import InvalidRequestError
+from user import Base, User
 
 
 class DB:
@@ -33,7 +32,7 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: str) -> TypeVar('User'):
+    def add_user(self, email: str, hashed_password: str) -> User:
         """Add new user to database
         Returns a User object
         """
@@ -42,17 +41,21 @@ class DB:
         self._session.commit()
         return user
 
-    def find_user_by(self, **kwargs) -> TypeVar('User'):
+
+'''
+    def find_user_by(self, **kwargs) -> User:
         """Returns first rrow found in users table
         as filtered by methods input arguments
         """
-        try:
-            user = self._session.query(User).filter_by(**kwargs).first()
-        except TypeError:
-            raise InvalidRequestError
-        if user is None:
+        user_keys = ['id', 'email', 'hashed_password', 'session_id',
+                     'reset_token']
+        for key in kwargs.keys():
+            if key not in user_keys:
+                raise InvalidRequestError
+        result = self._session.query(User).filter_by(**kwargs).first()
+        if result is None:
             raise NoResultFound
-        return user
+        return result
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """Use find_user_by to locate the user to update
@@ -61,10 +64,13 @@ class DB:
         Raises ValueError if argument does not correspond to user
         attribute passed
         """
-        user = self.find_user_by(id=user_id)
+        user_to_update = self.find_user_by(id=user_id)
+        user_keys = ['id', 'email', 'hashed_password', 'session_id',
+                     'reset_token']
         for key, value in kwargs.items():
-            if hasattr(user, key):
-                setattr(user, key, value)
+            if key in user_keys:
+                setattr(user_to_update, key, value)
             else:
                 raise ValueError
         self._session.commit()
+'''
