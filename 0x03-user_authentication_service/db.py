@@ -5,9 +5,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchmey.exc import InvalidRequestError
 from user import Base, User
+from typing import TypeVar
+from sqlalchmey.exc import InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
 
 
 class DB:
@@ -32,7 +33,7 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: str) -> User:
+    def add_user(self, email: str, hashed_password: str) -> TypeVar('User'):
         """Add new user to database
         Returns a User object
         """
@@ -41,19 +42,17 @@ class DB:
         self._session.commit()
         return user
 
-    def find_user_by(self, **kwargs) -> User:
+    def find_user_by(self, **kwargs) -> TypeVar('User'):
         """Returns first rrow found in users table
         as filtered by methods input arguments
         """
-        user_keys = ['id', 'email', 'hashed_password', 'session_id',
-                     'reset_token']
-        for key in kwargs.keys():
-            if key not in user_keys:
-                raise InvalidRequestError
-        result = self._session.query(User).filter_by(**kwargs).first()
-        if result is None:
+        try:
+            user = self._session.query(User).filter_by(**kwargs).first()
+        except TypeError:
+            raise InvalidRequestError
+        if user is None:
             raise NoResultFound
-        return result
+        return user
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """Use find_user_by to locate the user to update
@@ -62,12 +61,10 @@ class DB:
         Raises ValueError if argument does not correspond to user
         attribute passed
         """
-        user_to_update = self.find_user_by(id=user_id)
-        user_keys = ['id', 'email', 'hashed_password', 'session_id',
-                     'reset_token']
+        user = self.find_user_by(id=user_id)
         for key, value in kwargs.items():
-            if key in user_keys:
-                setattr(user_to_update, key, value)
+            if hasattr(user, key):
+                setattr(user, key, value)
             else:
                 raise ValueError
         self._session.commit()
