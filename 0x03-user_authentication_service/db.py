@@ -41,8 +41,6 @@ class DB:
         self._session.commit()
         return user
 
-
-'''
     def find_user_by(self, **kwargs) -> User:
         """Returns first rrow found in users table
         as filtered by methods input arguments
@@ -73,4 +71,3 @@ class DB:
             else:
                 raise ValueError
         self._session.commit()
-'''
