@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Route module for basic flask app API
 """
+
 from db import DB
 from flask import Flask, jsonify, request, abort, redirect
 from flask.helpers import make_response
@@ -13,7 +14,7 @@ app = Flask(__name__)
 
 
 @app.route('/', methods=['GET'], strict_slashes=False)
-def welcome(): -> str:
+def welcome() -> str:
     """GET /
     Returns welcome message
     """
@@ -31,7 +32,7 @@ def register_users():
                                   user_request['password'])
         return jsonify({"email": user_email, "message": "user created"})
     except ValueError:
-        return jsonify({"message": "email already reggistered"}), 400
+        return jsonify({"message": "email already registered"}), 400
 
 
 @app.route('/sessions', methods=['POST'], strict_slashes=False)
