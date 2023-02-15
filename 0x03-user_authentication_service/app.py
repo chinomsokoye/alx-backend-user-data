@@ -59,13 +59,12 @@ def logout():
     Redirect user to GET /, if doesnt exists, respond with 403 HTTP
     status
     """
-    session_cookie = request.cookies.get('session_id')
-    user = AUTH.get_user_from_session_id(session_cookie)
-    if user:
-        AUTH.destroy_session(user.id)
-        return redirect('/')
-    else:
+    user_cookie = request.cookies.get("session_id", None)
+    user = AUTH.get_user_from_session_id(user_cookie)
+    if user_cookie is None or user is None:
         abort(403)
+    AUTH.destroy_session(user.id)
+    return redirect('/')
 
 
 @app.route('/profile', methods=['GET'], strict_slashes=False)
